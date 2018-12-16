@@ -32,7 +32,9 @@ def MENU():
     parser.add_argument('-o', '--out', type=str, metavar="dir",
                         help='provide full output directory path. (def: \'dump\')')
     parser.add_argument('-U', '--usb', action='store_true',
-                        help='device connected over usb')
+                        help='connect to USB device')
+    parser.add_argument('-R', '--remote', action='store_true',
+                        help='connect to remote frida-server')
     parser.add_argument('-v', '--verbose', action='store_true',
                         help='verbose')
     parser.add_argument('-r', '--read-only', action='store_true',
@@ -53,6 +55,7 @@ arguments = MENU()
 APP_NAME = arguments.process
 DIRECTORY = ""
 USB = arguments.usb
+REMOTE = arguments.remote
 DEBUG_LEVEL = logging.INFO
 STRINGS = arguments.strings
 MAX_SIZE = 20971520
@@ -71,6 +74,8 @@ session = None
 try:
     if USB:
         session = frida.get_usb_device().attach(APP_NAME)
+    elif REMOTE:
+        session = frida.get_remote_device().attach(APP_NAME)
     else:
         session = frida.attach(APP_NAME)
 except Exception as e:
